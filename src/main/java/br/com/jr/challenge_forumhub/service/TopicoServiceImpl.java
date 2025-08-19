@@ -1,6 +1,7 @@
 package br.com.jr.challenge_forumhub.service;
 
 import br.com.jr.challenge_forumhub.dto.TopicoForm;
+import br.com.jr.challenge_forumhub.exception.ResourceExisteException;
 import br.com.jr.challenge_forumhub.exception.ResourceNotFoundException;
 import br.com.jr.challenge_forumhub.model.Curso;
 import br.com.jr.challenge_forumhub.model.Topico;
@@ -11,6 +12,7 @@ import br.com.jr.challenge_forumhub.repository.UsuarioRepository;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -32,12 +34,11 @@ public class TopicoServiceImpl implements TopicoService {
     public Topico criarTopico(String titulo, String mensagem, Long cursoId, Long usuarioId) {
         Optional<Topico> topicoOptional = topicoRepository.findByTituloAndMensagem(titulo, mensagem);
         if (topicoOptional.isPresent()) {
-            throw new ResourceNotFoundException("Tópico já cadastrado");
+            throw new ResourceExisteException("Tópico já cadastrado");
         }
         Curso curso = cursoRepository.findById(cursoId)
                 .orElseThrow(() -> new ResourceNotFoundException("Curso não encontrado com o ID: " + cursoId));
         Usuario usuario = usuarioRepository.findById(usuarioId)
-
                 .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado com o ID: " + usuarioId));
 
         Topico novoTopico = new Topico();
@@ -46,6 +47,7 @@ public class TopicoServiceImpl implements TopicoService {
         novoTopico.setCurso(curso);
         novoTopico.setUsuario(usuario);
         novoTopico.setStatus("Aberto");
+        novoTopico.setDataCriacao(LocalDateTime.now());
         return topicoRepository.save(novoTopico);
     }
 

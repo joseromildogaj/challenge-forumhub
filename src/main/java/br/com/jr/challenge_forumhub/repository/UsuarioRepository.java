@@ -2,8 +2,12 @@ package br.com.jr.challenge_forumhub.repository;
 
 import br.com.jr.challenge_forumhub.model.Usuario;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.security.core.userdetails.UserDetails;
 
 public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
-    UserDetails findByEmail(String email);
+
+    Usuario findByEmail(String email);
+
+    boolean existsByEmail(String email);
+
+    boolean existsById(Long id);
 }
